@@ -1,4 +1,4 @@
-# La roue des émotions
+# FeelFlow
 
 Stack :
 
@@ -9,12 +9,17 @@ Stack :
 
 ## TODO
 
-- Creation de quiz
-- Creation de l'historique
 - Developper la partie emotion autre qu'avec Paul Ekman
-- Découpler le code + architecture de dossier
 
 ## Avancées 
+
+23.11.2024 :
+
+-  Routing
+-  Refonte architecture
+-  Quiz plus complet
+-  historique sur le quiz
+
 22.11.2024 : 
 
 - Navbar latéral
