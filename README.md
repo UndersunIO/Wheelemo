@@ -13,6 +13,12 @@ Stack :
 
 ## Avancées 
 
+24.11.2024 :
+
+- Visualisation des données des émotions
+- Ajout de section historique
+- Refonte liste des émotions 
+
 23.11.2024 :
 
 -  Routing

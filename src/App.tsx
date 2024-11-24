@@ -6,6 +6,7 @@ import Emotions from "./pages/Emotions";
 import BreathingSession from "./pages/Breathing";
 import Quiz from "./pages/Quiz";
 import History from "./pages/History";
+import Stats from "./pages/Stats";
 
 const App = () => {
   const getInitialValue = (key: string, defaultValue: string) => {
@@ -32,7 +33,7 @@ const App = () => {
 
   return (
     <Router>
-      <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 to-purple-900 text-white">
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 to-purple-900 text-white font-sans">
         <div className="flex flex-1">
           <Sidebar />
           <div className="flex-1 p-6">
@@ -41,9 +42,11 @@ const App = () => {
               <Route path="/breathing" element={<BreathingSession />} />
               <Route path="/quiz" element={<Quiz />} />
               <Route path="/history" element={<History />} />
+              <Route path="/stats" element={<Stats />} />
             </Routes>
           </div>
         </div>
+
         <XPBar score={score} level={level} />
       </div>
     </Router>

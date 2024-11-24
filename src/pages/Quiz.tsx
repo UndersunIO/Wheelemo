@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface Emotion {
   name: string;
@@ -35,14 +35,8 @@ const emotions: Emotion[] = [
   {
     name: "😧 Surprise",
     description: "Une sensation d'étonnement.",
-    color: "#ff6b81",
+    color: "#FFA500",
     suggestions: ["Réfléchis calmement à ce qui s'est passé.", "Partage ton étonnement avec quelqu’un.", "Prends un moment pour t'adapter au changement."],
-  },
-  {
-    name: "🤢 Dégout",
-    description: "Une sensation de rejet envers un événement.",
-    color: "#2ed573",
-    suggestions: ["Éloigne-toi de ce qui te dégoûte.", "Rappelle-toi que c’est une émotion temporaire.", "Essaie de trouver un élément positif."],
   },
 ];
 
@@ -65,32 +59,23 @@ const questions = [
 ];
 
 const Quiz = () => {
-  const [step, setStep] = useState(0); 
+  const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
   const [result, setResult] = useState<Emotion | null>(null);
-  const [history, setHistory] = useState<Emotion[]>([]); // Historique 
-
-  // load history
-  useEffect(() => {
-    const savedHistory = localStorage.getItem("emotionHistory");
-    if (savedHistory) {
-      setHistory(JSON.parse(savedHistory));
-    }
-  }, []);
 
   const handleAnswer = (answer: string) => {
     setAnswers([...answers, answer]);
     if (step < questions.length - 1) {
-      setStep(step + 1); // next question
+      setStep(step + 1);
     } else {
-      calculateResult(); 
+      calculateResult();
     }
   };
 
   const calculateResult = () => {
     let calculatedEmotion: Emotion | null = null;
 
-    if (answers.includes("Triste") || answers.includes("Fatigué")) {
+    if (answers.includes("Triste") || answers.includes("Neutre")) {
       calculatedEmotion = emotions.find((emotion) => emotion.name === "😢 Tristesse")!;
     } else if (answers.includes("En colère")) {
       calculatedEmotion = emotions.find((emotion) => emotion.name === "😠 Colère")!;
@@ -102,12 +87,17 @@ const Quiz = () => {
 
     setResult(calculatedEmotion);
 
-    // Add emotion to history
-    const updatedHistory = [...history, calculatedEmotion!];
-    setHistory(updatedHistory);
-
-    // Save history to localStorage
-    localStorage.setItem("emotionHistory", JSON.stringify(updatedHistory));
+    // Add emotion to history 
+    if (calculatedEmotion) {
+      const currentHistory = JSON.parse(localStorage.getItem("emotionHistory") || "[]");
+      const newEntry = {
+        name: calculatedEmotion.name,
+        description: calculatedEmotion.description,
+        color: calculatedEmotion.color,
+        timestamp: new Date().toISOString(),
+      };
+      localStorage.setItem("emotionHistory", JSON.stringify([...currentHistory, newEntry]));
+    }
   };
 
   const restartQuiz = () => {
@@ -121,7 +111,14 @@ const Quiz = () => {
       {result ? (
         <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center">
           <h2 className="text-2xl font-bold mb-4">Tu ressens actuellement :</h2>
-          <div className="inline-block p-4 rounded-lg bg-purple-600 text-white shadow-lg"> 
+          <div
+            className="inline-block p-4 rounded-lg"
+            style={{
+              backgroundColor: result.color,
+              color: "#fff",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
+            }}
+          >
             <span className="text-xl font-bold">{result.name}</span>
           </div>
           <p className="text-gray-300 text-lg mt-4">{result.description}</p>
@@ -156,19 +153,6 @@ const Quiz = () => {
           </div>
         </div>
       )}
-
-      <div className="mt-8 bg-gray-800 p-6 rounded-lg shadow-lg text-center">
-        <h3 className="text-lg font-bold mb-4">Historique des émotions :</h3>
-        {history.length > 0 ? (
-          <ul className="list-disc list-inside text-gray-400">
-            {history.map((emotion, index) => (
-              <li key={index}>{emotion.name}</li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-400">Aucune émotion enregistrée pour le moment.</p>
-        )}
-      </div>
     </div>
   );
 };

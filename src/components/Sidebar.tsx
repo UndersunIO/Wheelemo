@@ -8,6 +8,8 @@ const Sidebar = () => {
     { name: "🌬 Exercice de respiration", path: "/breathing" },
     { name: "❓ Quiz", path: "/quiz" },
     { name: "📜 Historique", path: "/history" },
+    { name: "📊 Statistiques", path: "/stats" },
+    
   ];
 
   return (
