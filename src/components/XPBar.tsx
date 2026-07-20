@@ -1,31 +1,24 @@
-import { motion } from "framer-motion";
+import { Trophy } from "lucide-react";
 
 interface XPBarProps {
   score: number;
-  level: number;
 }
 
-const XPBar: React.FC<XPBarProps> = ({ score, level }) => {
+const XPBar = ({ score }: XPBarProps) => {
+  const level = Math.floor(score / 100) + 1;
+  const progress = score % 100;
+
   return (
-    <div className="w-full bg-gray-800 p-4 shadow-lg">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <span className="text-xl">🏆 Niveau {level}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xl">🌟 {score} XP</span>
-        </div>
+    <footer className="xp-dock" aria-label={`Niveau ${level}, ${progress} points sur 100`}>
+      <div className="xp-level">
+        <span className="xp-icon"><Trophy size={16} aria-hidden="true" /></span>
+        <span><strong>Niveau {level}</strong><small>{score} XP au total</small></span>
       </div>
-      <div className="w-full bg-gray-700 rounded-full h-4 mt-2">
-        <motion.div
-          className="bg-purple-500 h-4 rounded-full"
-          style={{ width: `${(score % 100)}%` }}
-          initial={{ width: 0 }}
-          animate={{ width: `${(score % 100)}%` }}
-          transition={{ duration: 0.5 }}
-        />
+      <div className="xp-progress" aria-hidden="true">
+        <span style={{ width: `${progress}%` }} />
       </div>
-    </div>
+      <span className="xp-next">{100 - progress} XP avant le niveau {level + 1}</span>
+    </footer>
   );
 };
 

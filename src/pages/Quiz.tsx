@@ -1,159 +1,170 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { ArrowRight, Check, RefreshCw, X } from "lucide-react";
+import { Link } from "react-router-dom";
 
-interface Emotion {
-  name: string;
-  description: string;
-  color: string;
-  suggestions: string[];
+interface QuizProps {
+  onXPUpdate: (xp: number) => void;
 }
-
-const emotions: Emotion[] = [
-  {
-    name: "😊 Joie",
-    description: "Un sentiment de bonheur et de légèreté.",
-    color: "#FFD700",
-    suggestions: ["Partage cette joie avec un proche.", "Écris ce qui te rend heureux.", "Prends un moment pour sourire."],
-  },
-  {
-    name: "😢 Tristesse",
-    description: "Une sensation de vide ou de perte.",
-    color: "#4A90E2",
-    suggestions: ["Prends un moment pour pleurer si nécessaire.", "Parle à quelqu’un en qui tu as confiance.", "Écoute une musique apaisante."],
-  },
-  {
-    name: "😠 Colère",
-    description: "Une montée d'énergie face à l'injustice.",
-    color: "#FF4757",
-    suggestions: ["Respire profondément plusieurs fois.", "Va marcher pour te défouler.", "Exprime calmement ce qui t'a frustré."],
-  },
-  {
-    name: "😨 Peur",
-    description: "Un sentiment d'insécurité ou de danger.",
-    color: "#7158e2",
-    suggestions: ["Note ce qui te fait peur pour mieux l'analyser.", "Rappelle-toi que c'est temporaire.", "Essaie un exercice de respiration."],
-  },
-  {
-    name: "😧 Surprise",
-    description: "Une sensation d'étonnement.",
-    color: "#FFA500",
-    suggestions: ["Réfléchis calmement à ce qui s'est passé.", "Partage ton étonnement avec quelqu’un.", "Prends un moment pour t'adapter au changement."],
-  },
-];
 
 const questions = [
   {
-    id: 1,
-    question: "Ton ressenti est plutôt ?",
-    options: ["Joyeux", "Triste", "Neutre", "En colère"],
+    eyebrow: "Nommer avec précision",
+    situation: "« La réunion a été déplacée trois fois. J'ai la mâchoire serrée et envie de tout laisser tomber. »",
+    question: "Quel mot décrit le mieux l'expérience immédiate ?",
+    options: ["Frustration", "Culpabilité", "Gratitude"],
+    answer: "Frustration",
+    explanation: "L'obstacle répété bloque un objectif et crée une tension : c'est le signal typique de la frustration.",
   },
   {
-    id: 2,
-    question: "Te sens-tu calme ou agité ?",
-    options: ["Calme", "Agité"],
+    eyebrow: "Séparer fait et interprétation",
+    situation: "Tu n'as pas reçu de réponse à ton message depuis hier.",
+    question: "Quelle phrase part d'un fait observable ?",
+    options: [
+      "Tu m'ignores encore.",
+      "Mon message est resté sans réponse depuis hier.",
+      "Tu ne respectes jamais mon temps.",
+    ],
+    answer: "Mon message est resté sans réponse depuis hier.",
+    explanation: "Un fait pourrait être filmé ou daté. « Ignorer » et « ne jamais respecter » ajoutent une intention ou un jugement.",
   },
   {
-    id: 3,
-    question: "Cette émotion est-elle forte ou légère ?",
-    options: ["Forte", "Légère"],
+    eyebrow: "Lire le besoin",
+    situation: "« Je suis anxieux·se avant cette présentation, même si je l'ai préparée. »",
+    question: "Quel besoin mérite probablement le plus d'attention ?",
+    options: ["Sécurité et préparation", "Célébration", "Aventure"],
+    answer: "Sécurité et préparation",
+    explanation: "L'anxiété anticipe un risque. Vérifier les repères disponibles et chercher du soutien peut rendre la situation plus praticable.",
+  },
+  {
+    eyebrow: "Formuler une demande",
+    situation: "Tu te sens dépassé·e par plusieurs tâches urgentes.",
+    question: "Quelle demande est la plus concrète et négociable ?",
+    options: [
+      "Il faut que tout le monde fasse un effort.",
+      "Arrêtez de me mettre la pression.",
+      "Peux-tu m'aider 15 minutes à classer ces trois priorités ?",
+    ],
+    answer: "Peux-tu m'aider 15 minutes à classer ces trois priorités ?",
+    explanation: "La demande précise une action, une durée et laisse à l'autre la possibilité de répondre.",
   },
 ];
 
-const Quiz = () => {
-  const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState<string[]>([]);
-  const [result, setResult] = useState<Emotion | null>(null);
+const Quiz = ({ onXPUpdate }: QuizProps) => {
+  const [index, setIndex] = useState(0);
+  const [selected, setSelected] = useState("");
+  const [validated, setValidated] = useState(false);
+  const [score, setScore] = useState(0);
+  const [done, setDone] = useState(false);
+  const rewarded = useRef(false);
+  const current = questions[index];
+  const isCorrect = selected === current.answer;
 
-  const handleAnswer = (answer: string) => {
-    setAnswers([...answers, answer]);
-    if (step < questions.length - 1) {
-      setStep(step + 1);
-    } else {
-      calculateResult();
-    }
+  const validate = () => {
+    if (!selected || validated) return;
+    setValidated(true);
+    if (isCorrect) setScore((value) => value + 1);
   };
 
-  const calculateResult = () => {
-    let calculatedEmotion: Emotion | null = null;
-
-    if (answers.includes("Triste") || answers.includes("Neutre")) {
-      calculatedEmotion = emotions.find((emotion) => emotion.name === "😢 Tristesse")!;
-    } else if (answers.includes("En colère")) {
-      calculatedEmotion = emotions.find((emotion) => emotion.name === "😠 Colère")!;
-    } else if (answers.includes("Joyeux") && answers.includes("Calme")) {
-      calculatedEmotion = emotions.find((emotion) => emotion.name === "😊 Joie")!;
-    } else {
-      calculatedEmotion = emotions.find((emotion) => emotion.name === "😧 Surprise")!;
+  const next = () => {
+    if (index === questions.length - 1) {
+      setDone(true);
+      if (!rewarded.current) {
+        onXPUpdate(20);
+        rewarded.current = true;
+      }
+      return;
     }
-
-    setResult(calculatedEmotion);
-
-    // Add emotion to history 
-    if (calculatedEmotion) {
-      const currentHistory = JSON.parse(localStorage.getItem("emotionHistory") || "[]");
-      const newEntry = {
-        name: calculatedEmotion.name,
-        description: calculatedEmotion.description,
-        color: calculatedEmotion.color,
-        timestamp: new Date().toISOString(),
-      };
-      localStorage.setItem("emotionHistory", JSON.stringify([...currentHistory, newEntry]));
-    }
+    setIndex((value) => value + 1);
+    setSelected("");
+    setValidated(false);
   };
 
-  const restartQuiz = () => {
-    setStep(0);
-    setAnswers([]);
-    setResult(null);
+  const restart = () => {
+    setIndex(0);
+    setSelected("");
+    setValidated(false);
+    setScore(0);
+    setDone(false);
   };
+
+  if (done) {
+    return (
+      <section className="flow-page flow-page--narrow quiz-complete">
+        <div className="completion-mark"><Check size={28} /></div>
+        <span className="eyebrow">Micro-apprentissage terminé · +20 XP</span>
+        <h1>{score}/4 repères consolidés</h1>
+        <p className="page-lead">
+          {score >= 3
+            ? "Tu distingues déjà bien les étapes. Le meilleur entraînement maintenant : les appliquer à une situation réelle."
+            : "Rejoue la séquence une fois, puis applique-la à un ressenti réel : c'est l'usage qui fixe les repères."}
+        </p>
+        <div className="score-ring" style={{ "--score": `${(score / questions.length) * 360}deg` } as React.CSSProperties}>
+          <span><strong>{Math.round((score / questions.length) * 100)}%</strong><small>de réussite</small></span>
+        </div>
+        <div className="completion-actions">
+          <Link className="sl-button sl-button--primary" to="/">Faire mon check-in</Link>
+          <button className="sl-button" type="button" onClick={restart}><RefreshCw size={17} /> Rejouer</button>
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <div className="flex flex-col items-center justify-center text-center">
-      {result ? (
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center">
-          <h2 className="text-2xl font-bold mb-4">Tu ressens actuellement :</h2>
-          <div
-            className="inline-block p-4 rounded-lg"
-            style={{
-              backgroundColor: result.color,
-              color: "#fff",
-              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
-            }}
-          >
-            <span className="text-xl font-bold">{result.name}</span>
-          </div>
-          <p className="text-gray-300 text-lg mt-4">{result.description}</p>
-          <div className="mt-4">
-            <h3 className="text-lg font-bold mb-2">Suggestions d'actions :</h3>
-            <ul className="list-disc list-inside text-gray-400">
-              {result.suggestions.map((suggestion, index) => (
-                <li key={index}>{suggestion}</li>
-              ))}
-            </ul>
-          </div>
-          <button
-            onClick={restartQuiz}
-            className="mt-6 px-6 py-3 bg-purple-600 text-white rounded-lg font-bold hover:bg-purple-700 transition"
-          >
-            Recommencer
-          </button>
+    <section className="flow-page training-page">
+      <header className="page-header">
+        <div>
+          <span className="eyebrow">Entraînement actif · 3 min</span>
+          <h1>Muscler ton vocabulaire émotionnel</h1>
+          <p className="page-lead">Une situation, un choix, un retour immédiat. L'objectif n'est pas la note : c'est le réflexe.</p>
         </div>
-      ) : (
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center">
-          <h2 className="text-2xl font-bold mb-6">{questions[step].question}</h2>
-          <div className="grid grid-cols-2 gap-4">
-            {questions[step].options.map((option) => (
+        <span className="question-count">{index + 1} / {questions.length}</span>
+      </header>
+
+      <div className="quiz-progress"><span style={{ width: `${((index + 1) / questions.length) * 100}%` }} /></div>
+
+      <article className="quiz-card">
+        <span className="eyebrow">{current.eyebrow}</span>
+        <blockquote>{current.situation}</blockquote>
+        <h2>{current.question}</h2>
+        <div className="quiz-options">
+          {current.options.map((option, optionIndex) => {
+            const answeredCorrectly = validated && option === current.answer;
+            const answeredWrongly = validated && selected === option && !isCorrect;
+            return (
               <button
+                className={`${selected === option ? "selected" : ""} ${answeredCorrectly ? "correct" : ""} ${answeredWrongly ? "wrong" : ""}`}
+                type="button"
                 key={option}
-                onClick={() => handleAnswer(option)}
-                className="p-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+                disabled={validated}
+                onClick={() => setSelected(option)}
               >
-                {option}
+                <span>{String.fromCharCode(65 + optionIndex)}</span>
+                <strong>{option}</strong>
+                {answeredCorrectly && <Check size={18} />}
+                {answeredWrongly && <X size={18} />}
               </button>
-            ))}
-          </div>
+            );
+          })}
         </div>
-      )}
-    </div>
+
+        {validated && (
+          <div className={`answer-feedback ${isCorrect ? "correct" : "retry"}`} role="status">
+            <span>{isCorrect ? <Check size={18} /> : <RefreshCw size={18} />}</span>
+            <div><strong>{isCorrect ? "Oui, c'est le bon repère." : "Pas tout à fait — voici le repère."}</strong><p>{current.explanation}</p></div>
+          </div>
+        )}
+
+        <div className="quiz-actions">
+          {!validated ? (
+            <button className="sl-button sl-button--primary" type="button" disabled={!selected} onClick={validate}>Vérifier ma réponse</button>
+          ) : (
+            <button className="sl-button sl-button--primary" type="button" onClick={next}>
+              {index === questions.length - 1 ? "Voir mon résultat" : "Question suivante"} <ArrowRight size={17} />
+            </button>
+          )}
+        </div>
+      </article>
+    </section>
   );
 };
 

@@ -1,36 +1,60 @@
-import { Link, useLocation } from "react-router-dom";
+import {
+  BarChart3,
+  BookOpenCheck,
+  HeartPulse,
+  History,
+  Sparkles,
+} from "lucide-react";
+import { NavLink } from "react-router-dom";
 
-const Sidebar = () => {
-  const location = useLocation();
+interface SidebarProps {
+  open: boolean;
+  onNavigate: () => void;
+}
 
-  const links = [
-    { name: "🥰 Les émotions", path: "/" },
-    { name: "🌬 Exercice de respiration", path: "/breathing" },
-    { name: "❓ Quiz", path: "/quiz" },
-    { name: "📜 Historique", path: "/history" },
-    { name: "📊 Statistiques", path: "/stats" },
-    
-  ];
+const links = [
+  { name: "Mon ressenti", path: "/", icon: HeartPulse },
+  { name: "Me réguler", path: "/breathing", icon: Sparkles },
+  { name: "M'entraîner", path: "/quiz", icon: BookOpenCheck },
+  { name: "Mon journal", path: "/history", icon: History },
+  { name: "Mes repères", path: "/stats", icon: BarChart3 },
+];
 
-  return (
-    <div className="w-1/4 bg-gray-800 p-4 rounded-r-lg shadow-lg">
-      <h2 className="text-center text-xl font-bold mb-4">FeelFlow</h2>
-      <ul className="flex flex-col gap-3">
-        {links.map((link) => (
-          <li key={link.path}>
-            <Link
-              to={link.path}
-              className={`block p-3 rounded-lg transition-all ${
-                location.pathname === link.path ? "bg-purple-600" : "hover:bg-gray-700"
-              }`}
-            >
-              {link.name}
-            </Link>
-          </li>
-        ))}
-      </ul>
+const Sidebar = ({ open, onNavigate }: SidebarProps) => (
+  <aside className={`app-sidebar ${open ? "app-sidebar--open" : ""}`} aria-label="Navigation principale">
+    <div className="brand-lockup">
+      <span className="brand-mark" aria-hidden="true">F</span>
+      <div>
+        <strong>FeelFlow</strong>
+        <span>par SupraLearning</span>
+      </div>
     </div>
-  );
-};
+
+    <div className="sidebar-intro">
+      <span className="eyebrow">Boussole émotionnelle</span>
+      <p>Repérer. Comprendre. Exprimer.</p>
+    </div>
+
+    <nav className="sidebar-nav">
+      {links.map(({ name, path, icon: Icon }) => (
+        <NavLink
+          key={path}
+          to={path}
+          end={path === "/"}
+          onClick={onNavigate}
+          className={({ isActive }) => `nav-link ${isActive ? "nav-link--active" : ""}`}
+        >
+          <Icon size={19} strokeWidth={1.8} aria-hidden="true" />
+          <span>{name}</span>
+        </NavLink>
+      ))}
+    </nav>
+
+    <div className="sidebar-footer">
+      <span className="status-dot" aria-hidden="true" />
+      <span>Tes données restent sur cet appareil</span>
+    </div>
+  </aside>
+);
 
 export default Sidebar;

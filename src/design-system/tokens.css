@@ -1,0 +1,106 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap");
+
+:root {
+  color-scheme: dark;
+
+  /* Product identity — DevLab101 is the default for this application. */
+  --sl-accent: #00d1ff;
+  --sl-accent-contrast: #001017;
+  --sl-product-name: "DevLab101";
+
+  /* Shared SupraLearning surfaces. */
+  --sl-bg-primary: #030711;
+  --sl-bg-secondary: rgb(7 15 23);
+  --sl-bg-elevated: #0b141e;
+  --sl-bg-interactive: rgb(255 255 255 / 4%);
+  --sl-bg-interactive-hover: rgb(255 255 255 / 6.5%);
+  --sl-overlay: rgb(3 7 17 / 78%);
+
+  /* Shared SupraLearning content colors. */
+  --sl-text-primary: #fff;
+  --sl-text-secondary: rgb(255 255 255 / 72%);
+  --sl-text-subtle: rgb(255 255 255 / 56%);
+  --sl-text-muted: rgb(255 255 255 / 45%);
+  --sl-border: rgb(255 255 255 / 8%);
+  --sl-border-strong: rgb(255 255 255 / 16%);
+  --sl-focus: #fff;
+
+  /* Semantic colors, shared by every product. */
+  --sl-success: #42d392;
+  --sl-warning: #fc6;
+  --sl-danger: #ff6b6b;
+  --sl-info: #68a7ff;
+
+  /* Typography. */
+  --sl-font-sans:
+    "Manrope", ui-sans-serif, system-ui, -apple-system, blinkmacsystemfont,
+    "Segoe UI", sans-serif;
+  --sl-font-mono: "IBM Plex Mono", "SFMono-Regular", consolas, monospace;
+  --sl-font-size-xs: 0.75rem;
+  --sl-font-size-sm: 0.875rem;
+  --sl-font-size-md: 1rem;
+  --sl-font-size-lg: 1.125rem;
+  --sl-leading-tight: 1.15;
+  --sl-leading-body: 1.7;
+
+  /* One spacing scale for layout and components. */
+  --sl-space-1: 4px;
+  --sl-space-2: 8px;
+  --sl-space-3: 12px;
+  --sl-space-4: 16px;
+  --sl-space-6: 24px;
+  --sl-space-8: 32px;
+  --sl-space-12: 48px;
+  --sl-space-16: 64px;
+
+  /* Shape, depth and motion. */
+  --sl-radius: 12px;
+  --sl-radius-sm: 8px;
+  --sl-radius-pill: 999px;
+  --sl-shadow: 0 10px 30px rgb(0 0 0 / 20%);
+  --sl-shadow-subtle: 0 4px 16px rgb(0 0 0 / 14%);
+  --sl-duration: 220ms;
+  --sl-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Layout. */
+  --sl-container: 1200px;
+  --sl-reading-width: 760px;
+  --sl-control-height: 44px;
+  --sl-control-height-lg: 48px;
+}
+
+[data-supra-product="supralearning"] {
+  --sl-accent: #2f9cff;
+  --sl-accent-contrast: #020b14;
+  --sl-product-name: "SupraLearning";
+}
+
+[data-supra-product="supralab-ai"] {
+  --sl-accent: #ff5a5a;
+  --sl-accent-contrast: #170303;
+  --sl-product-name: "SupraLab AI";
+}
+
+[data-supra-product="devlab101"] {
+  --sl-accent: #00d1ff;
+  --sl-accent-contrast: #001017;
+  --sl-product-name: "DevLab101";
+}
+
+[data-supra-product="flashlearning"] {
+  --sl-accent: #ff9f1c;
+  --sl-accent-contrast: #170b00;
+  --sl-product-name: "FlashLearning";
+}
+
+[data-supra-product="feelflow"] {
+  --sl-accent: #2dd4bf;
+  --sl-accent-contrast: #021310;
+  --sl-product-name: "FeelFlow";
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --sl-duration: 0.01ms;
+  }
+}
